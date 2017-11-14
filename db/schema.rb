@@ -10,7 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 3) do
+ActiveRecord::Schema.define(version: 5) do
+
+  create_table "setlist_songs", force: :cascade do |t|
+    t.integer "order"
+    t.integer "song_id"
+    t.integer "setlist_id"
+  end
 
   create_table "setlists", force: :cascade do |t|
     t.string "name"

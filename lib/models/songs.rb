@@ -3,6 +3,8 @@ class Song < ActiveRecord::Base
   has_many :setlists, through: :setlist_songs
 
   def find_by_title(title)
+    # self.find_by(title: title)
+
     self.all.select do |song|
       song.title == title
     end

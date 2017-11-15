@@ -3,6 +3,7 @@
 # require_relative '../lib/models/user.rb'
 require_relative '../config/environment.rb'
 
+# Do I need destroys???
 
 User.create(name: 'Dan')
 

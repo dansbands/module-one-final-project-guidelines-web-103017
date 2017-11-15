@@ -1,5 +1,5 @@
 class SetlistSong < ActiveRecord::Base
-  has_many :songs
-  has_many :setlists
+  belongs_to :songs
+  belongs_to :setlists
 
 end

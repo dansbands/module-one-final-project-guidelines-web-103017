@@ -14,7 +14,7 @@ class CLI
     input == "exit" ? goodbye : input
   end
 
-  def option
+  def main_menu
     prompt_user
     input = get_user_input
     if input == "1"
@@ -24,7 +24,7 @@ class CLI
       puts "Created new setlist '#{title}'"
       add_songs(setlist)
     elsif input == "2"
-      option_2
+      view_setlists
     elsif input.upcase == "M"
       start
     else
@@ -33,13 +33,13 @@ class CLI
   end
 
 # can I just use add_songs here?
-  def option_2
+  def view_setlists
     puts "Here are the existing setlists:"
     setlists = Setlist.all.each do |list|
       puts "#{list.id}. #{list.name}"
     end
     choose_setlist
-    # create more options Here
+    # create more main_menus Here
       # delete setlist
       # remove song from setlist
       # find setlists by song name
@@ -59,7 +59,7 @@ class CLI
 
   def invalid_selection
     puts "Invalid selection"
-    option
+    main_menu
   end
 
   def pick_a_song_by_number(setlist)
@@ -72,11 +72,11 @@ class CLI
     song = Song.all.select do |song|
       song.id.to_s == input
     end.first
-    # setlist.songs << song # does the method work without this?
+    # setlist.songs << song # does the method work without this? - Yes, it actually adds duplicates, but that gives length for increment
     setlistsong = SetlistSong.create(order: setlist.songs.length + 1, song_id: song.id, setlist_id: setlist.id)
 
     updated_setlist(song, setlist)
-    binding.pry
+    # binding.pry
   end
 
   def updated_setlist(song, setlist)
@@ -94,12 +94,12 @@ class CLI
     end
   end
 
-  # can i reuse this method in option_2
+  # can i reuse this method in view_setlists
   def add_songs_to_setlist(setlist)
     input = ""
     while input != "1" || input != "2" || input.upcase != "M"
 
-      puts "Would you like to:
+      puts "Add Song - Would you like to:
         1. Create a new song
         2. Choose from existing songs
         'M' - Main Menu"
@@ -119,7 +119,7 @@ class CLI
   end
 
   def add_songs(setlist)
-    if setlist.list_songs == []
+    if setlist.list_songs == [] # is there a method for list_songs? Yes, in setlist class
       puts "There are no songs in your setlist"
     else
       puts "Here are the songs in this setlist"
@@ -147,9 +147,10 @@ class CLI
     puts "Created new song '#{title}'"
     song_id = song.id
     setlist_id = setlist.id
-    order = setlist.songs.length + 1
-    setlistsong = SetlistSong.create(order: order, song_id: song_id, setlist_id: setlist_id)
+    order = song.setlist_songs.length + 1 # may not need the increment
 
+    setlistsong = SetlistSong.create(order: order, song_id: song_id, setlist_id: setlist_id)
+    # binding.pry
     updated_setlist(song, setlist)
     # puts "Added '#{song.title}' to '#{setlist.name}' at position '#{order}'."
     # puts "Here's your updated setlist:"
@@ -175,7 +176,7 @@ class CLI
       if input == "1"
         add_songs_to_setlist(setlist)
       elsif input == "2"
-        option_2
+        view_setlists
       elsif input.upcase == "M"
         start
       end
@@ -184,7 +185,7 @@ class CLI
 
   def start
     welcome
-    option
+    main_menu
   end
 
   def goodbye

@@ -39,19 +39,22 @@ class CLI
       puts "#{list.id}. #{list.name}"
     end
     choose_setlist
+    # create more options Here
   end
 
   def choose_setlist
     puts "Choose a setlist by number from the list above:"
     setlist = get_user_input
-    choice = Setlist.all.select do |list|
-      list.id.to_s == setlist
-    end
-    puts "Setlist '#{choice.first.id} - #{choice.first.name}'"
+    # choice = Setlist.all.select do |list|
+    #   list.id.to_s == setlist
+    # end.first
+    puts "Setlist '#{choice.id} - #{choice.name}'"
     puts "Songs:"
-    choice.first.songs.each do |song|
-      puts "#{song.id}. #{song.title}"
+    choice.songs.each do |song|
+      # puts "  #{song.id}. #{song.title}"
+      puts "  #{song.setlist_songs.first.order}. #{song.title}"
     end
+    add_songs_to_setlist(choice)
   end
 
   def invalid_selection
@@ -59,7 +62,7 @@ class CLI
     option
   end
 
-  def choose_a_song(setlist)
+  def pick_a_song_by_number(setlist)
     # needs to loop back if invalid input
     puts "Pick a song by number:"
     Song.all.each do |song|
@@ -104,7 +107,7 @@ class CLI
         add_a_song(setlist)
       elsif input == "2"
         #  choose from existing songs
-        choose_a_song(setlist)
+        pick_a_song_by_number(setlist)
 
       elsif input.upcase == "M"
         start

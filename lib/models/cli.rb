@@ -44,17 +44,14 @@ class CLI
 
   def choose_setlist
     puts "Choose a setlist by number from the list above:"
-    setlist = get_user_input
-    # choice = Setlist.all.select do |list|
-    #   list.id.to_s == setlist
-    # end.first
+    setlist_id = get_user_input
+    choice = Setlist.all.find do |list|
+      list.id.to_s == setlist_id
+    end
     puts "Setlist '#{choice.id} - #{choice.name}'"
     puts "Songs:"
-    choice.songs.each do |song|
-      # puts "  #{song.id}. #{song.title}"
-      puts "  #{song.setlist_songs.first.order}. #{song.title}"
-    end
-    add_songs_to_setlist(choice)
+    ordered_setlist_songs = choice.setlist_songs.order(:order).each {|sl| puts "#{sl.order}. #{sl.song.title}"}
+    add_songs_to_setlist(choice) # does this still work properly, or do we need to pass in ordered_setlist_songs?
   end
 
   def invalid_selection

@@ -18,20 +18,16 @@ class CLI
     input = get_user_input
 
     if input == "1"
-      valid_selection = true
-      puts "Enter a title for your new setilst"
+      puts "Enter a title for your new setlist"
       title = get_user_input
       setlist = Setlist.create(name: title)
       puts "Created new setlist '#{title}'"
       add_songs(setlist)
     elsif input == "2"
-      valid_selection = true
       puts "Here are the existing setlists:"
       setlists = Setlist.all.each do |list|
         puts "#{list.id}. #{list.name}"
       end
-
-
     else
       invalid_selection
     end
@@ -42,9 +38,9 @@ class CLI
     option
   end
 
-  def yes_no(input)
+  def yes_no(input, setlist)
     if input.upcase == 'Y'
-      add_a_song
+      add_a_song(setlist)
     elsif input.upcase == 'N'
       goodbye
     else
@@ -61,15 +57,29 @@ class CLI
     end
     puts "Would you like to add a song?(Y/N)"
     input = get_user_input
-    yes_no(input)
+    yes_no(input, setlist)
   end
 
-  def add_a_song
+  def add_a_song(setlist)
     puts "Enter the title of the song:"
     title = get_user_input
-    song = Song.create(title)
-    puts "Created new song #{title}"
-
+    song = Song.create(title: title)
+    puts "Created new song '#{title}'"
+    song_id = song.id
+    setlist_id = setlist.id
+    order = setlist.songs.length + 1
+    setlistsong = SetlistSong.create(order: order, song_id: song_id, setlist_id: setlist_id)
+    puts "Added #{song} to #{setlist.name} at position #{order}."
+    puts "Here's your updated setlist:"
+    new_list = Setlist.all.select do |item|
+      item == setlist
+    end
+    new_list = new_list.first
+    count = 1
+    new_list.songs.each do |song|
+      puts "#{count}. #{song.title}"
+      count += 1
+    end
   end
 
   def start

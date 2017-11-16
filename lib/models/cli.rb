@@ -40,6 +40,9 @@ class CLI
     end
     choose_setlist
     # create more options Here
+      # delete setlist
+      # remove song from setlist
+      # find setlists by song name
   end
 
   def choose_setlist
@@ -69,8 +72,11 @@ class CLI
     song = Song.all.select do |song|
       song.id.to_s == input
     end.first
-    setlist.songs << song
+    # setlist.songs << song # does the method work without this?
+    setlistsong = SetlistSong.create(order: setlist.songs.length + 1, song_id: song.id, setlist_id: setlist.id)
+
     updated_setlist(song, setlist)
+    binding.pry
   end
 
   def updated_setlist(song, setlist)

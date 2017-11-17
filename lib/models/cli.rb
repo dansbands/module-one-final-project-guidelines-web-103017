@@ -11,7 +11,7 @@ class CLI
 
   def get_user_input
     input = gets.chomp
-    input == "exit" ? goodbye : input
+    input == "exit" || input == "quit" ? goodbye : input
   end
 
   def main_menu
@@ -29,6 +29,79 @@ class CLI
       start
     else
       invalid_selection
+    end
+  end
+
+  def add_songs(setlist)
+    if setlist.list_songs == [] # is there a method for list_songs? Yes, in setlist class
+      puts "There are no songs in your setlist"
+    else
+      puts "Here are the songs in this setlist"
+      puts setlist.list_songs
+    end
+    puts "Would you like to add a song?(Y/N)"
+    input = get_user_input
+    yes_no(input, setlist)
+  end
+
+  def yes_no(input, setlist)
+    if input.upcase == 'Y'
+      # add_songs_to_setlist(setlist)
+
+      add_songs_to_setlist(Setlist.all.last)
+    elsif input.upcase == 'N'
+      goodbye
+    else
+      add_songs(setlist)
+    end
+  end
+
+  # can i reuse this method in view_setlists
+  def add_songs_to_setlist(setlist)
+    input = ""
+    while input != "1" || input != "2" || input.upcase != "M"
+      puts "Add Song - Would you like to:
+        1. Create a new song
+        2. Choose from existing songs
+        'M' - Main Menu"
+      input = get_user_input
+      if input == "1"
+        add_a_song(setlist)
+      elsif input == "2"
+        pick_a_song_by_number(setlist)
+      elsif input.upcase == "M"
+        start
+      end
+    end
+  end
+
+  def add_a_song(setlist)
+    puts "Enter the title of the song:"
+    title = get_user_input
+    song = Song.create(title: title)
+    puts "Created new song '#{title}'"
+    song_id = song.id
+    setlist_id = setlist.id
+    order = song.setlist_songs.length + 1 # may not need the increment
+    setlistsong = SetlistSong.create(order: order, song_id: song_id, setlist_id: setlist_id)
+    updated_setlist(song, setlist)
+    add_another_song(setlist)
+  end
+
+  def add_another_song(setlist)
+    input = ""
+    while input != "1" || input != "2" || input.upcase != "M"
+      puts "Choose an Option:
+            1. Add Another Song to This Setlist
+            2. View All Setlists"
+      input = get_user_input
+      if input == "1"
+        add_songs_to_setlist(setlist)
+      elsif input == "2"
+        view_setlists
+      elsif input.upcase == "M"
+        start
+      end
     end
   end
 
@@ -74,9 +147,7 @@ class CLI
     end.first
     # setlist.songs << song # does the method work without this? - Yes, it actually adds duplicates, but that gives length for increment
     setlistsong = SetlistSong.create(order: setlist.songs.length + 1, song_id: song.id, setlist_id: setlist.id)
-
     updated_setlist(song, setlist)
-    # binding.pry
   end
 
   def updated_setlist(song, setlist)
@@ -86,100 +157,10 @@ class CLI
     new_list = Setlist.all.select do |item|
       item == setlist
     end.first
-    # new_list = new_list.first
     count = 1
     new_list.songs.each do |song|
       puts "#{count}. #{song.title}"
       count += 1
-    end
-  end
-
-  # can i reuse this method in view_setlists
-  def add_songs_to_setlist(setlist)
-    input = ""
-    while input != "1" || input != "2" || input.upcase != "M"
-
-      puts "Add Song - Would you like to:
-        1. Create a new song
-        2. Choose from existing songs
-        'M' - Main Menu"
-
-      input = get_user_input
-      if input == "1"
-        # create a new song
-        add_a_song(setlist)
-      elsif input == "2"
-        #  choose from existing songs
-        pick_a_song_by_number(setlist)
-
-      elsif input.upcase == "M"
-        start
-      end
-    end
-  end
-
-  def add_songs(setlist)
-    if setlist.list_songs == [] # is there a method for list_songs? Yes, in setlist class
-      puts "There are no songs in your setlist"
-    else
-      puts "Here are the songs in this setlist"
-      puts setlist.list_songs
-    end
-    puts "Would you like to add a song?(Y/N)"
-    input = get_user_input
-    yes_no(input, setlist)
-  end
-
-  def yes_no(input, setlist)
-    if input.upcase == 'Y'
-      add_songs_to_setlist(setlist)
-    elsif input.upcase == 'N'
-      goodbye
-    else
-      add_songs(setlist)
-    end
-  end
-
-  def add_a_song(setlist)
-    puts "Enter the title of the song:"
-    title = get_user_input
-    song = Song.create(title: title)
-    puts "Created new song '#{title}'"
-    song_id = song.id
-    setlist_id = setlist.id
-    order = song.setlist_songs.length + 1 # may not need the increment
-
-    setlistsong = SetlistSong.create(order: order, song_id: song_id, setlist_id: setlist_id)
-    # binding.pry
-    updated_setlist(song, setlist)
-    # puts "Added '#{song.title}' to '#{setlist.name}' at position '#{order}'."
-    # puts "Here's your updated setlist:"
-    # new_list = Setlist.all.select do |item|
-    #   item == setlist
-    # end.first
-    # # new_list = new_list.first
-    # count = 1
-    # new_list.songs.each do |song|
-    #   puts "#{count}. #{song.title}"
-    #   count += 1
-    # end
-    add_another_song(setlist)
-  end
-
-  def add_another_song(setlist)
-    input = ""
-    while input != "1" || input != "2" || input.upcase != "M"
-      puts "Choose an Option:
-            1. Add Another Song to This Setlist
-            2. View All Setlists"
-      input = get_user_input
-      if input == "1"
-        add_songs_to_setlist(setlist)
-      elsif input == "2"
-        view_setlists
-      elsif input.upcase == "M"
-        start
-      end
     end
   end
 
